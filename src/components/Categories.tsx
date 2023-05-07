@@ -1,12 +1,14 @@
 import React from 'react';
+import useWhyDidYouUpdate from 'ahooks/lib/useWhyDidYouUpdate';
 
-type CatgoriesProps = {
+type CategoriesProps = {
     categoryId: number;
     onClickCategory: (i: number) => void;
 }
 
-const Categories: React.FC<CatgoriesProps> = ({onClickCategory, categoryId}) => {
+const Categories: React.FC<CategoriesProps> = ({onClickCategory, categoryId}) => {
 
+    useWhyDidYouUpdate('Categories', {onClickCategory, categoryId} )
   const categories = ['Все', 'Мясные', 'Вегетарианская', 'Гриль', 'Острые', 'Закрытые']
 
   return (
@@ -20,4 +22,4 @@ const Categories: React.FC<CatgoriesProps> = ({onClickCategory, categoryId}) => 
   );
 };
 
-export default Categories;
+export default React.memo(Categories);

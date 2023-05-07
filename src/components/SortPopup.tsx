@@ -1,6 +1,7 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import {selectSort, setSort, SortPropertyEnum} from "../redux/slice/filterSlice";
+import React, {FC, useEffect, useRef, useState} from 'react';
+import {useDispatch} from "react-redux";
+import {setSort} from "../redux/slice/filter/slice";
+import {Sort, SortPropertyEnum} from "../redux/slice/filter/types";
 
 
 type SortItem = {
@@ -20,8 +21,11 @@ export const sortList: SortItem[] = [
   {name: 'алфавиту (DESC)', sortProperty: SortPropertyEnum.TITLE_DESC},
   {name: 'алфавиту (ASC)', sortProperty: SortPropertyEnum.TITLE_DESC}];
 
+type SortPopupProps = {
+  value: Sort;
+}
 
-export const SortPopup = React.memo(() => {
+export const SortPopup: FC<SortPopupProps> = React.memo(({value}) => {
 
 
   const [open, setOpen] = useState(false)
@@ -29,13 +33,9 @@ export const SortPopup = React.memo(() => {
 
   const dispatch = useDispatch()
 
-  const sortValue = useSelector(selectSort)
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const _event = event as PopupClick;
-      console.log(_event)
-      console.log(event)
       if (sortRef.current && !_event.composedPath().includes(sortRef.current)) {
         setOpen(false)
       }
@@ -66,7 +66,7 @@ export const SortPopup = React.memo(() => {
           />
         </svg>
         <b>Сортировка по:</b>
-        <span onClick={() => setOpen(!open)}>{sortValue.name}</span>
+        <span onClick={() => setOpen(!open)}>{value.name}</span>
       </div>
       {
         open && <div className="sort__popup">
@@ -74,7 +74,7 @@ export const SortPopup = React.memo(() => {
 
             {
               sortList.map((obj, index) => <li key={index} onClick={() => onClickItemSort(obj)}
-                                           className={obj.sortProperty === sortValue.sortProperty ? "active" : ''}>{obj.name}</li>)
+                                           className={obj.sortProperty === value.sortProperty ? "active" : ''}>{obj.name}</li>)
             }
           </ul>
         </div>

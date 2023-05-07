@@ -23,6 +23,11 @@
     transition: all $duration ease-in-out;
   }
 
+  &:disabled {
+    pointer-events: none;
+    opacity:0.3;
+  }
+
   &:hover {
     background-color: darken($orange, 8%);
   }

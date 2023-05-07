@@ -1,16 +1,18 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import Categories from "../components/Categories";
 import SortPopup from "../components/SortPopup";
 import Loader from "../components/Loader";
 import PizzaBlock from "../components/PizzaBlock";
 import Pagination from "../components/Pagination/Pagination";
-import {useDispatch, useSelector} from "react-redux";
-import {FilterSliceState, setCategoryId, setCurrentPage, setFilters} from "../redux/slice/filterSlice";
+import {useSelector} from "react-redux";
 import qs from 'qs'
-import {Link, useNavigate} from 'react-router-dom'
+import { useNavigate} from 'react-router-dom'
 import {sortList} from "../components/SortPopup";
-import {fetchPizzas, selectPizzaData, selectFilter, SearchPizzaParams} from "../redux/slice/pizzasSlice";
 import {useAppDispatch} from "../redux/store";
+import {selectFilter, selectPizzaData} from "../redux/slice/pizzas/selectors";
+import {setCategoryId, setCurrentPage, setFilters} from "../redux/slice/filter/slice";
+import {fetchPizzas} from "../redux/slice/pizzas/slice";
+import {SearchPizzaParams} from "../redux/slice/pizzas/types";
 
 const Home: React.FC = () => {
 
@@ -56,7 +58,7 @@ const Home: React.FC = () => {
 
     useEffect(() => {
         if (window.location.search) {
-            const params = qs.parse(window.location.search.substring(1)) as  unknown as  SearchPizzaParams
+            const params = qs.parse(window.location.search.substring(1)) as unknown as SearchPizzaParams
             const sort = sortList.find(obj => obj.sortProperty === params.sortBy)
             dispatch(
                 setFilters({
@@ -92,7 +94,7 @@ const Home: React.FC = () => {
                 sort: sort,
                 categoryId,
                 currentPage,
-            }) as unknown as  SearchPizzaParams
+            }) as unknown as SearchPizzaParams
 
             navigate(`?${queryString}`)
         }
@@ -105,13 +107,17 @@ const Home: React.FC = () => {
     const skeletons = [...new Array(8)].map(index => <Loader key={index}/>)
 
     const pizzas = items.map((pizza: any) => <PizzaBlock  {...pizza}/>
-)
+    )
+
+    const onChangeCategory = useCallback((i: number) => {
+        dispatch(setCategoryId(i))
+    }, [])
 
     return (
         <div className="container">
             <div className="content__top">
-                <Categories categoryId={categoryId} onClickCategory={(i: number) => dispatch(setCategoryId(i))}/>
-                <SortPopup/>
+                <Categories categoryId={categoryId} onClickCategory={onChangeCategory}/>
+                <SortPopup value={sort} />
             </div>
             <h2 className="content__title">Все пиццы</h2>
             {
